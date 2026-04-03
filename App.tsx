@@ -1,117 +1,144 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TextInput, Pressable } from 'react-native';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet
+} from 'react-native';
 
-const nomesIniciais = [
-  "Luis",
-  "Fernado",
-  "José",
-]
+
+type Tarefa = {
+  id: string;
+  texto: string;
+  concluida: boolean;
+};
 
 export default function App() {
+  const [texto, setTexto] = useState('');
+  const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 
-  var [nomes, setNomes] = useState(nomesIniciais);
-  var [novoNome, setNovoNome] = useState('');
+  
+  function adicionarTarefa() {
+    if (texto.trim() === '') return;
 
-  const adicionarNome = () => {
-    if (novoNome.trim() !== '') {
-      setNomes([...nomes, novoNome.trim()]);
-      setNovoNome('');
-    }
+    const novaTarefa: Tarefa = {
+      id: Date.now().toString(),
+      texto: texto,
+      concluida: false
+    };
+
+    setTarefas([...tarefas, novaTarefa]);
+    setTexto('');
+  }
+
+
+  function removerTarefa(id: string) {
+    setTarefas(tarefas.filter(t => t.id !== id));
+  }
+
+  
+  function toggleTarefa(id: string) {
+    setTarefas(
+      tarefas.map(t =>
+        t.id === id ? { ...t, concluida: !t.concluida } : t
+      )
+    );
   }
 
   return (
     <View style={styles.container}>
-      {
+      <Text style={styles.titulo}>To Do List</Text>
 
-        nomes.map((nome, index) => (
-          <View key={index} style={styles.elemtentos}>
-            <Text style={styles.itens}> {nome} </Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Digite uma tarefa..."
+        value={texto}
+        onChangeText={setTexto}
+      />
+
+      <TouchableOpacity style={styles.botao} onPress={adicionarTarefa}>
+        <Text style={styles.botaoTexto}>Adicionar</Text>
+      </TouchableOpacity>
+
+      <FlatList
+        data={tarefas}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.itemContainer}>
+            
+            {/* Marcar como concluída */}
+            <TouchableOpacity onPress={() => toggleTarefa(item.id)}>
+              <Text
+                style={[
+                  styles.itemTexto,
+                  item.concluida && styles.concluida
+                ]}
+              >
+                {item.texto}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Remover */}
+            <TouchableOpacity onPress={() => removerTarefa(item.id)}>
+              <Text style={styles.remover}>X</Text>
+            </TouchableOpacity>
+
           </View>
-        ))
-      }
-      <View style={styles.inputContainer}>
-
-        <TextInput
-          style={styles.input}
-          placeholder='Digite um novo nome'
-          placeholderTextColor='#fff'
-          value={novoNome}
-          onChangeText={setNovoNome}
-          onSubmitEditing={adicionarNome}
-        />
-        <Pressable style={styles.botao} onPress={adicionarNome}>
-          <Text style={styles.textoBotao}>ADICIONAR</Text>
-        </Pressable>
-
-      </View>
-      <StatusBar style="auto" />
+        )}
+      />
     </View>
   );
 }
 
+// 🎨 Estilos
 const styles = StyleSheet.create({
-  textoBotao: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  botao: {
-    backgroundColor: '#c81ecb',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    justifyContent: 'center',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 20,
-    width: '100%',
-    paddingHorizontal: 20,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: '#1e293b',
-    color: '#fff',
-    padding: 12,
-    borderRadius: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  elemtentos: {
-    backgroundColor: '#c81ecb',
-    borderRadius: 16,
-    marginTop: 8,
-  },
-  itens: {
-    color: '#f5f5f5',
-    fontSize: 16,
-    fontWeight: '800',
-    padding: 4,
-  },
-  images: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    marginTop: 16
-  },
   container: {
     flex: 1,
-    backgroundColor: '#0f172a',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 20,
+    marginTop: 40
   },
-  title: {
-    color: '#fff',
+  titulo: {
     fontSize: 26,
-    fontWeight: `bold`,
+    fontWeight: 'bold',
+    marginBottom: 20
   },
-  subtitle: {
-    color: `#9ca3af`,
-    fontSize: 16,
-    marginTop: 8,
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10
   },
-
+  botao: {
+    backgroundColor: '#007bff',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  botaoTexto: {
+    color: '#fff',
+    fontWeight: 'bold'
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 12,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 8,
+    marginBottom: 10
+  },
+  itemTexto: {
+    fontSize: 16
+  },
+  concluida: {
+    textDecorationLine: 'line-through',
+    color: 'gray'
+  },
+  remover: {
+    color: 'red',
+    fontWeight: 'bold'
+  }
 });
