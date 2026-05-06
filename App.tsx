@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   FlatList,
   StyleSheet
 } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Tarefa = {
   id: string;
@@ -19,7 +19,33 @@ export default function App() {
   const [texto, setTexto] = useState('');
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 
-  
+  // 🔹 SALVAR tarefas
+  const salvarTarefas = async (novasTarefas: Tarefa[]) => {
+    try {
+      await AsyncStorage.setItem('@tarefas', JSON.stringify(novasTarefas));
+    } catch (error) {
+      console.log('Erro ao salvar tarefas', error);
+    }
+  };
+
+  // 🔹 CARREGAR tarefas
+  const carregarTarefas = async () => {
+    try {
+      const tarefasSalvas = await AsyncStorage.getItem('@tarefas');
+      if (tarefasSalvas !== null) {
+        setTarefas(JSON.parse(tarefasSalvas));
+      }
+    } catch (error) {
+      console.log('Erro ao carregar tarefas', error);
+    }
+  };
+
+  // 🔹 Carrega ao abrir o app
+  useEffect(() => {
+    carregarTarefas();
+  }, []);
+
+  // 🔹 Adicionar tarefa
   function adicionarTarefa() {
     if (texto.trim() === '') return;
 
@@ -29,22 +55,29 @@ export default function App() {
       concluida: false
     };
 
-    setTarefas([...tarefas, novaTarefa]);
+    const novasTarefas = [...tarefas, novaTarefa];
+
+    setTarefas(novasTarefas);
+    salvarTarefas(novasTarefas);
     setTexto('');
   }
 
-
+  // 🔹 Remover tarefa
   function removerTarefa(id: string) {
-    setTarefas(tarefas.filter(t => t.id !== id));
+    const novasTarefas = tarefas.filter(t => t.id !== id);
+
+    setTarefas(novasTarefas);
+    salvarTarefas(novasTarefas);
   }
 
-  
+  // 🔹 Marcar como concluída
   function toggleTarefa(id: string) {
-    setTarefas(
-      tarefas.map(t =>
-        t.id === id ? { ...t, concluida: !t.concluida } : t
-      )
+    const novasTarefas = tarefas.map(t =>
+      t.id === id ? { ...t, concluida: !t.concluida } : t
     );
+
+    setTarefas(novasTarefas);
+    salvarTarefas(novasTarefas);
   }
 
   return (

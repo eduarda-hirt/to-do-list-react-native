@@ -1,33 +1,79 @@
-# To Do List - React Native
+# To-Do List App (React Native + AsyncStorage)
 
-Aplicativo simples de lista de tarefas desenvolvido com React Native usando Expo.
+Aplicativo simples de lista de tarefas desenvolvido com **React Native (Expo)** e **TypeScript**, com persistência local utilizando AsyncStorage.
 
-## Funcionalidades
+---
 
-- Adicionar tarefas
-- Listar tarefas
-- Marcar como concluídas
-- Remover tarefas
+##  Funcionalidades
 
-## Como executar
+*  Adicionar novas tarefas
+*  Marcar tarefas como concluídas
+*  Remover tarefas
+*  Armazenamento local com AsyncStorage
+*  Persistência dos dados mesmo após fechar o aplicativo
 
-1. Instalar dependências:
+---
+
+##  Tecnologias utilizadas
+
+* React Native (Expo)
+* TypeScript
+* AsyncStorage
+
+---
+
+##  Instalação
+
+1. Clone o repositório:
+
+```bash
+git clone https://github.com/eduarda-hirt/to-do-list-react-native
+```
+
+2. Acesse a pasta do projeto:
+
+```bash
+cd SEU-REPOSITORIO
+```
+
+3. Instale as dependências:
+
+```bash
 npm install
+```
 
+---
 
-2. Rodar o projeto:
+## ▶️ Como executar o projeto
+
+Execute o comando abaixo:
+
+```bash
 npx expo start
+```
 
-3. Abrir no navegador (tecla W) ou no celular com Expo Go
+Depois disso, você pode:
 
-## Tecnologias
+* Abrir no navegador (Web)
+* Rodar no emulador Android/iOS
+* Escanear o QR Code com o aplicativo Expo Go no celular
 
-- React Native
-- Expo
-- TypeScript
+---
 
-## Observações
+##  Teste da persistência
 
-- Ao clicar em uma tarefa, ela é marcada como concluída, ficando com o texto riscado e com cor alterada.
-- Ao clicar novamente, a tarefa volta ao estado normal.
-- Para remover uma tarefa, basta clicar no "X" ao lado.
+1. Adicione uma tarefa
+2. Feche o aplicativo
+3. Abra novamente
+
+ A tarefa deve continuar salva na lista, confirmando o funcionamento do AsyncStorage.
+
+---
+
+##  Estrutura
+
+* `App.tsx` → Componente principal com toda a lógica do app
+* Uso de `useState` e `useEffect` para controle de estado
+* AsyncStorage para salvar e recuperar dados
+
+
